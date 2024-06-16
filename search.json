@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Data manipulation guide",
+    "section": "",
+    "text": "To use the web-app we provided with your own data, your data will have to meet a specific format.\nThe first column must be the participant ID, the values can be any “full” number (e.g., 1, 2, 3)\nThe second column must contain all selections the participant made, as a comma-separated string (e.g., “1,2,3”)\nThe naming of the columns matters, the first column must be called “Subject”, and the second “Selections”."
+  },
+  {
+    "objectID": "index.html#web-app-requirements",
+    "href": "index.html#web-app-requirements",
+    "title": "Data manipulation guide",
+    "section": "",
+    "text": "To use the web-app we provided with your own data, your data will have to meet a specific format.\nThe first column must be the participant ID, the values can be any “full” number (e.g., 1, 2, 3)\nThe second column must contain all selections the participant made, as a comma-separated string (e.g., “1,2,3”)\nThe naming of the columns matters, the first column must be called “Subject”, and the second “Selections”."
+  },
+  {
+    "objectID": "index.html#introduction",
+    "href": "index.html#introduction",
+    "title": "Data manipulation guide",
+    "section": "Introduction",
+    "text": "Introduction\n\nI will now show you how to prepare your data for the web-app with an example data set.\nThis data was downloaded from QuestionPro, so your survey data might look different.\nTherefore, this guide is just an example and you might have to adjust the code to your specific data set."
+  },
+  {
+    "objectID": "index.html#step-1-load-the-data",
+    "href": "index.html#step-1-load-the-data",
+    "title": "Data manipulation guide",
+    "section": "Step 1: Load the data",
+    "text": "Step 1: Load the data\n\n# load packages\nlibrary(tidyverse)\n\n# Uncomment below to set working directory to the location of the current file\n# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))\n\n# Load the data\ndf &lt;- read_csv(\"slots10.csv\")  \n\n#rename columns for better understanding\ncolnames(df) &lt;- c(\"Monday_9am\", \"Tuesday_9am\", \"Wednesday_9am\", \"Thursday_9am\", \"Friday_9am\", \n                  \"Monday_6pm\", \"Tuesday_6pm\", \"Wednesday_6pm\", \"Thursday_6pm\", \"Friday_6pm\", \"ID\")\n\nprint(head(df[,1:6]))\n\n# A tibble: 6 × 6\n  Monday_9am Tuesday_9am Wednesday_9am Thursday_9am Friday_9am Monday_6pm\n       &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;\n1         NA          NA            NA           NA         NA         NA\n2         NA           1             1            1          1          1\n3         NA          NA             1           NA         NA          1\n4         NA          NA            NA           NA         NA         NA\n5         NA          NA            NA            1          1          1\n6          1           1            NA           NA         NA          1\n\nprint(head(df[,7:11]))\n\n# A tibble: 6 × 5\n  Tuesday_6pm Wednesday_6pm Thursday_6pm Friday_6pm    ID\n        &lt;dbl&gt;         &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;\n1          NA             1            1          1     1\n2           1             1            1          1     2\n3           1             1            1          1     3\n4          NA             1            1          1     4\n5           1             1           NA         NA     5\n6           1            NA           NA         NA     6\n\n\n\nGreat, it looks like we have 10 unique time slots, each represented by a column.\nThe participant ID is in the last column, and shows that every row is a unique participant.\nWe can see that if the participant selected the slot, the value of that column is 1, otherwise it is NA."
+  },
+  {
+    "objectID": "index.html#step-2-preparing-the-selections-column",
+    "href": "index.html#step-2-preparing-the-selections-column",
+    "title": "Data manipulation guide",
+    "section": "Step 2: Preparing the selections column",
+    "text": "Step 2: Preparing the selections column\n\nWe want to end up with a string of selections for each participant (e.g., “1,2,3”).\nSo my thinking is to turn all the 1’s into the number of the column.\nFor example if a participant selected Tuesday, 9am (Column 2), we want to turn that into a 2.\n\n\n# replace all 1's  in the rows with the index of the column, ignore the last column\nfor (i in 1:(ncol(df)-1)){\n  df[,i] &lt;- ifelse(df[,i] == 1, i, NA)\n}\n\n\nIn this case, a simple for loop did the trick.\nHere’s what the code did in simple language:\n\nFor each column in the data frame, if the value is 1, replace it with the column number.\nIf the value is not 1, leave it as NA.\n\nNow, we can combine all the time slot columns into one new column.\n\n\n# combine all columns into one column (except the last column)\ndf$selections &lt;- apply(df[,1:(ncol(df)-1)], 1, function(x) paste(na.omit(x), collapse = \",\"))\n\n\nHere’s what the code did in simple language:\n\nFor each row in the data frame, combine all the values (of the time slot columns) in the row into a string.\nIf the value is NA, ignore it.\nSeparate the values with a comma.\n\nNow, we can drop the columns we don’t need anymore.\n\n\n#drop the columns we don't need anymore\ndf &lt;- df[,11:12]\n\nprint(head(df))\n\n# A tibble: 6 × 2\n     ID selections        \n  &lt;dbl&gt; &lt;chr&gt;             \n1     1 8,9,10            \n2     2 2,3,4,5,6,7,8,9,10\n3     3 3,6,7,8,9,10      \n4     4 8,9,10            \n5     5 4,5,6,7,8         \n6     6 1,2,6,7           \n\n\n\nFrom the printout, it might not look like the selections column is a string, but notice how below the column name it says “”. This means it is a character column, only containing strings by definition.\nWe can confirm the values are indeed strings by checking the first row.\n\n\nprint(df$selections[1])\n\n[1] \"8,9,10\""
+  },
+  {
+    "objectID": "index.html#step-3-save-the-data",
+    "href": "index.html#step-3-save-the-data",
+    "title": "Data manipulation guide",
+    "section": "Step 3: Save the data",
+    "text": "Step 3: Save the data\n\nAll that is left to do now is rename the column headers and export our data frame to a CSV file.\nNote that in the CSV file, the selections column will be a string of numbers separated by commas, even if it might not look so when opened in a spreadsheet app.\n\n\ncolnames(df) &lt;- c(\"Subject\", \"Selections\")\n\nwrite_csv(df, \"slots10_prepared.csv\")\n\nThis data will work with the web-app we provided. If you have any questions, feel free to ask!"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]

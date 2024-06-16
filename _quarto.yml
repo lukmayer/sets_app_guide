@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: .
+
+website:
+  title: "Waste not want not: web-app"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Guide
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+
