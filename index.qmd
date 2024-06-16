@@ -1,0 +1,98 @@
+---
+title: "Data manipulation guide"
+---
+
+## Web-app requirements
+
+-   To use the web-app we provided with your own data, your data will have to meet a specific format.
+-   The first column must be the participant ID, the values can be any "full" number (e.g., 1, 2, 3)
+-   The second column must contain all selections the participant made, as a comma-separated string (e.g., "1,2,3")
+-   The naming of the columns matters, the first column must be called "Subject", and the second "Selections".
+
+## Introduction
+
+-   I will now show you how to prepare your data for the web-app with an example data set.
+-   This data was downloaded from QuestionPro, so your survey data might look different.
+-   Therefore, this guide is just an example and you might have to adjust the code to your specific data set.
+
+## Step 1: Load the data
+
+```{r, warning=FALSE, message=FALSE}
+
+# load packages
+library(tidyverse)
+
+# Uncomment below to set working directory to the location of the current file
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# Load the data
+df <- read_csv("slots10.csv")  
+
+#rename columns for better understanding
+colnames(df) <- c("Monday_9am", "Tuesday_9am", "Wednesday_9am", "Thursday_9am", "Friday_9am", 
+                  "Monday_6pm", "Tuesday_6pm", "Wednesday_6pm", "Thursday_6pm", "Friday_6pm", "ID")
+
+print(head(df[,1:6]))
+print(head(df[,7:11]))
+```
+
+-   Great, it looks like we have 10 unique time slots, each represented by a column.
+-   The participant ID is in the last column, and shows that every row is a unique participant.
+-   We can see that if the participant selected the slot, the value of that column is 1, otherwise it is NA.
+
+## Step 2: Preparing the selections column
+
+-   We want to end up with a string of selections for each participant (e.g., "1,2,3").
+-   So my thinking is to turn all the 1's into the number of the column.
+-   For example if a participant selected Tuesday, 9am (Column 2), we want to turn that into a 2.
+
+```{r}
+# replace all 1's  in the rows with the index of the column, ignore the last column
+for (i in 1:(ncol(df)-1)){
+  df[,i] <- ifelse(df[,i] == 1, i, NA)
+}
+```
+
+-   In this case, a simple for loop did the trick.
+-   Here's what the code did in simple language:
+    -   For each column in the data frame, if the value is 1, replace it with the column number.
+    -   If the value is not 1, leave it as NA.
+-   Now, we can combine all the time slot columns into one new column.
+
+```{r}
+# combine all columns into one column (except the last column)
+df$selections <- apply(df[,1:(ncol(df)-1)], 1, function(x) paste(na.omit(x), collapse = ","))
+```
+
+-   Here's what the code did in simple language:
+    -   For each row in the data frame, combine all the values (of the time slot columns) in the row into a string.
+    -   If the value is NA, ignore it.
+    -   Separate the values with a comma.
+-   Now, we can drop the columns we don't need anymore.
+
+```{r}
+#drop the columns we don't need anymore
+df <- df[,11:12]
+
+print(head(df))
+```
+
+-   From the printout, it might not look like the selections column is a string, but notice how below the column name it says "<chr>". This means it is a character column, only containing strings by definition.
+-   We can confirm the values are indeed strings by checking the first row.
+
+```{r}
+print(df$selections[1])
+```
+
+## Step 3: Save the data
+
+-   All that is left to do now is rename the column headers and export our data frame to a CSV file.
+-   Note that in the CSV file, the selections column will be a string of numbers separated by commas, even if it might not look so when opened in a spreadsheet app.
+
+```{r}
+colnames(df) <- c("Subject", "Selections")
+
+write_csv(df, "slots10_prepared.csv")
+```
+
+This data will work with the web-app we provided. If you have any questions, feel free to ask!
