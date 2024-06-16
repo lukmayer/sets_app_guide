@@ -11,7 +11,7 @@ title: "Data manipulation guide"
 
 ## Introduction
 
--   I will now show you how to prepare your data for the web-app with an example data set.
+-   I will now show you how to prepare your data (in R) for the web-app with an example data set.
 -   This data was downloaded from QuestionPro, so your survey data might look different.
 -   Therefore, this guide is just an example and you might have to adjust the code to your specific data set.
 
@@ -77,7 +77,7 @@ df <- df[,11:12]
 print(head(df))
 ```
 
--   From the printout, it might not look like the selections column is a string, but notice how below the column name it says "<chr>". This means it is a character column, only containing strings by definition.
+-   From the printout, it might not look like the selections column is a string, but notice how below the column name it says "chr". This means it is a character column, only containing strings by definition.
 -   We can confirm the values are indeed strings by checking the first row.
 
 ```{r}
