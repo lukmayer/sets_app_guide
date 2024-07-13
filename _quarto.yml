@@ -3,7 +3,7 @@ project:
   output-dir: .
 
 website:
-  title: "Waste not want not: web-app"
+  title: "Optimeet: web-app"
   navbar:
     left:
       - href: index.qmd

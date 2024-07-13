@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Data manipulation guide",
@@ -40,12 +47,5 @@
     "title": "Data manipulation guide",
     "section": "Step 3: Save the data",
     "text": "Step 3: Save the data\n\nAll that is left to do now is rename the column headers and export our data frame to a CSV file.\nNote that in the CSV file, the selections column will be a string of numbers separated by commas, even if it might not look so when opened in a spreadsheet app.\n\n\ncolnames(df) &lt;- c(\"Subject\", \"Selections\")\n\nwrite_csv(df, \"slots10_prepared.csv\")\n\nThis data will work with the web-app we provided. If you have any questions, feel free to ask!"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
   }
 ]
